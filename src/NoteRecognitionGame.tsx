@@ -12,9 +12,27 @@ type Note = string;
 
 const NOTE_SEQUENCE_LENGTH = 5;
 const TIME_BETWEEN_NOTES = 4000;
+const STARTING_NOTE = "C/4"
+
+function getRandomArbitrary(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}
 
 function generateNoteSequence(sequenceLength = NOTE_SEQUENCE_LENGTH): Note[] {
-    return []; //TODO
+    let result: Note[] = [STARTING_NOTE];
+    let prevNote = STARTING_NOTE;
+
+    for (let i = 1; i < sequenceLength; i++) {
+        let prevNotePitch = noteStringToPitch(prevNote);
+        let lowerBound = Math.min(60, prevNotePitch - 4);
+        let upperBound = Math.min(81, prevNotePitch + 4)
+        let newPitch = getRandomArbitrary(lowerBound, upperBound);
+        let noteToAdd = pitchToNoteString(newPitch);
+        result.push(noteToAdd);
+        prevNote = noteToAdd;
+    }
+    
+    return result;
 }
 
 interface NoteRecognitionStaveProps {
