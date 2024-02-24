@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { exit } from '@tauri-apps/api/process';
 
-import Vex, { SVGContext, StaveNote, GhostNote, Voice, Formatter, NoteStruct } from "vexflow";
+import Vex, { SVGContext, StaveNote, GhostNote, Voice, Formatter, NoteStruct, Accidental } from "vexflow";
 const { Renderer, Stave } = Vex.Flow;
 
 import { listen } from "@tauri-apps/api/event";
@@ -21,6 +21,11 @@ interface NoteRecognitionStaveProps {
     teacherNotes: Note[]
     studentNotes: Note[]
 };
+
+function getAccidentalsFromNote(note: string): string {
+    let [baseNote, _octave] = note.split("/");
+    return baseNote.slice(1);
+}
 
 function NoteRecognitionStave({ teacherNotes, studentNotes }: NoteRecognitionStaveProps) {
     const outputDivRef = useRef<HTMLDivElement>(null);
@@ -43,11 +48,14 @@ function NoteRecognitionStave({ teacherNotes, studentNotes }: NoteRecognitionSta
         });
 
         const teacherNotesToDraw = teacherNoteStructs.map((struct, index) => {
-            if (index < studentNotesPlayed) {
-                return new StaveNote(struct);
-            } else {
-                return new GhostNote(struct);
+            let note = index < studentNotesPlayed ? new StaveNote(struct) : new GhostNote(struct);
+            let accidentals = getAccidentalsFromNote(teacherNotes[index]);
+
+            if (accidentals !== "") {
+                note.addModifier(new Accidental(accidentals));
             }
+
+            return note;
         })
 
         const studentVoice = new Voice({ num_beats: NOTE_SEQUENCE_LENGTH, beat_value: 4 });
@@ -56,7 +64,7 @@ function NoteRecognitionStave({ teacherNotes, studentNotes }: NoteRecognitionSta
         }), ...Array(NOTE_SEQUENCE_LENGTH - studentNotesPlayed).fill({ duration: "q" })];
 
         const studentNotesToDraw = studentVoiceNoteStructs.map((struct, index) => {
-            let note = index < studentNotesPlayed ? new StaveNote(struct) : new GhostNote(struct)
+            let note = index < studentNotesPlayed ? new StaveNote(struct) : new GhostNote(struct);
 
             if (teacherNotes[index] == studentNotes[index]) {
                 note.setStyle({fillStyle: "green", strokeStyle: "green"});
@@ -64,15 +72,20 @@ function NoteRecognitionStave({ teacherNotes, studentNotes }: NoteRecognitionSta
                 note.setStyle({fillStyle: "red", strokeStyle: "red"});
             }
 
-            return note
+            let accidentals = getAccidentalsFromNote(studentNotes[index]);            
+
+            if (accidentals !== "") {
+                note.addModifier(new Accidental(accidentals));
+            }
+
+            return note;
         })
 
         teacherVoice.addTickables(teacherNotesToDraw);
         studentVoice.addTickables(studentNotesToDraw);
 
         // the two voices are not "aware" of each other
-        new Formatter().joinVoices([teacherVoice]).format([teacherVoice], 445);
-        new Formatter().joinVoices([studentVoice]).format([studentVoice], 445);
+        new Formatter().joinVoices([studentVoice, teacherVoice]).format([studentVoice, teacherVoice], 445);
 
         // Render voice
         teacherVoice.draw(context, stave);
@@ -139,7 +152,7 @@ export default function NoteRecognitionGame()  {
     // const menuActivated = studentNotesPlayed == NOTE_SEQUENCE_LENGTH;
 
     const [teacherNotes, setTeacherNotes] = useState<Note[]>(["C#/4", "D/5", "A/4", "C/4", "D#/4"]);
-    const [studentNotes, setStudentNotes] = useState<Note[]>([]);
+    const [studentNotes, setStudentNotes] = useState<Note[]>(["C/4", "C/4", "C/4", "C/4", "C/4"]);
     const [acceptInput, setAcceptInput] = useState(false);
     let menuActivated = studentNotes.length >= teacherNotes.length;
 
