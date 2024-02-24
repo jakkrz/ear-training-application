@@ -116,7 +116,7 @@ function NoteRecognitionStave({
           ? new StaveNote(struct)
           : new GhostNote(struct);
 
-      if (teacherNotes[index] == studentNotes[index]) {
+      if (noteStringsAreEquivalent(teacherNotes[index], studentNotes[index])) {
         note.setStyle({ fillStyle: "green", strokeStyle: "green" });
       } else {
         note.setStyle({ fillStyle: "red", strokeStyle: "red" });
