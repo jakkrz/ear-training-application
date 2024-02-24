@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { exit } from '@tauri-apps/api/process';
 
-import Vex, { SVGContext, StaveNote, GhostNote, Voice, Formatter, NoteStruct, Tickable } from "vexflow";
+import Vex, { SVGContext, StaveNote, GhostNote, Voice, Formatter, NoteStruct } from "vexflow";
 const { Renderer, Stave } = Vex.Flow;
 
-type GameState = "PlayingSounds" | "ReceivingNotes" | "AwaitingRestart";
+import { listen } from "@tauri-apps/api/event";
+
+// type GameState = "PlayingSounds" | "ReceivingNotes" | "AwaitingRestart";
 
 type Note = string;
+
 const NOTE_SEQUENCE_LENGTH = 5;
+const TIME_BETWEEN_NOTES = 4000;
 
 function generateNoteSequence(sequenceLength = NOTE_SEQUENCE_LENGTH): Note[] {
     return []; //TODO
@@ -83,13 +87,93 @@ function NoteRecognitionStave({ teacherNotes, studentNotes }: NoteRecognitionSta
     return <div ref={outputDivRef} className="notation-container"></div>;
 }
 
-export default function NoteRecognitionGame()  {
-    const [gameState, setGameState] = useState<GameState>("PlayingSounds");
-    const [teacherNotes, setTeacherNotes] = useState<Note[]>(["C#/4", "D/5", "A/4", "C/4", "D#/4"]);
-    const [studentNotes, setStudentNotes] = useState<Note[]>(["D/4", "F/4", "A/4", "B/4", "C/4"]);
-    const studentNotesPlayed = studentNotes.length;
-    const menuActivated = studentNotesPlayed == NOTE_SEQUENCE_LENGTH;
+const mapOffsetToNoteUsingSharps = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const mapOffsetToNoteUsingFlats  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+const USE_SHARPS = true;
 
+function noteStringsAreEquivalent(noteStringA: string, noteStringB: string) {
+    return noteStringToPitch(noteStringA) == noteStringToPitch(noteStringB);
+}
+
+function pitchToNoteString(pitch: number): string {
+    let octave = Math.floor(pitch / 12);
+    let offset = pitch % 12
+    let noteName = "";
+
+    if (USE_SHARPS) {
+        noteName = mapOffsetToNoteUsingSharps[offset];
+    } else {
+        noteName = mapOffsetToNoteUsingFlats[offset];
+    }
+    
+    let noteString = `${noteName}/${octave - 1}`;
+
+    return noteString;
+}
+
+function noteStringToPitch(noteString: string): number {
+    let [noteName, octaveString] = noteString.split("/");
+    let octave = Number(octaveString) + 1;
+
+    let offset = mapOffsetToNoteUsingSharps.indexOf(noteName);
+    offset = offset !== -1 ? offset : mapOffsetToNoteUsingFlats.indexOf(noteName);
+
+    if (offset === -1) {
+        throw new Error(`Could not decode ${noteString} to pitch`);
+    }
+
+    return octave * 12 + offset;
+}
+
+interface MidiNoteOnEvent {
+    payload: {
+        pitch: number,
+        velocity: number,
+        channel: number
+    }
+};
+
+export default function NoteRecognitionGame()  {
+    // const [gameState, setGameState] = useState<GameState>("PlayingSounds");
+    // const studentNotesPlayed = studentNotes.length;
+    // const menuActivated = studentNotesPlayed == NOTE_SEQUENCE_LENGTH;
+
+    const [teacherNotes, setTeacherNotes] = useState<Note[]>(["C#/4", "D/5", "A/4", "C/4", "D#/4"]);
+    const [studentNotes, setStudentNotes] = useState<Note[]>([]);
+    const [acceptInput, setAcceptInput] = useState(false);
+    let menuActivated = studentNotes.length >= teacherNotes.length;
+
+    useEffect(() => {
+        if (acceptInput) {
+            let unlistenPromise = listen("onmidinoteon", (event: MidiNoteOnEvent) => {
+                if (acceptInput && studentNotes.length < teacherNotes.length) {
+                    let pitch = event.payload.pitch;
+                    setStudentNotes([...studentNotes, pitchToNoteString(pitch)]);
+                }
+            })
+
+            return () => {
+                unlistenPromise.then((unlisten) => unlisten());
+            };
+        } else {
+            let currentTimeoutId: ReturnType<typeof setTimeout> = -1;
+            let notesPlayed = 0;
+            function playNote() {
+                console.log(`Playing ${teacherNotes[notesPlayed]}`)
+                notesPlayed++;
+                if (notesPlayed < teacherNotes.length) {
+                    currentTimeoutId = setTimeout(playNote, TIME_BETWEEN_NOTES);
+                } else {
+                    setAcceptInput(true);
+                }
+            }
+            currentTimeoutId = setTimeout(playNote, TIME_BETWEEN_NOTES);
+
+            return () => {
+                clearTimeout(currentTimeoutId);
+            }
+        }
+    }, [acceptInput]);
 
     async function handleExitButtonClick() {
         await exit(0);
@@ -98,7 +182,7 @@ export default function NoteRecognitionGame()  {
     function handleNextButtonClick() {
         setTeacherNotes(generateNoteSequence(NOTE_SEQUENCE_LENGTH));
         setStudentNotes([]);
-        setGameState("PlayingSounds")
+        setAcceptInput(false);
     }
 
     return (
