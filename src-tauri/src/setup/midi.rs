@@ -11,14 +11,14 @@ use tracing::info;
 struct NoteOnPayload {
     channel: u8,
     pitch: u8,
-    velocity: u8
+    velocity: u8,
 }
 
 #[derive(Clone, serde::Serialize)]
 struct NoteOffPayload {
     channel: u8,
     pitch: u8,
-    velocity: u8
+    velocity: u8,
 }
 
 pub fn setup(app: AppHandle) -> Result<(), ()> {
@@ -66,28 +66,34 @@ pub fn setup(app: AppHandle) -> Result<(), ()> {
             "midir-read-input",
             move |stamp, message, _| {
                 info!("{}: {:?} (len = {})", stamp, message, message.len());
-                new_app.emit_all("onmidi", message).expect("failed to emit onmidi event");
+                new_app
+                    .emit_all("onmidi", message)
+                    .expect("failed to emit onmidi event");
 
                 let status_byte = message[0];
-                
+
                 if status_byte >> 4 == 0x9 {
-                    new_app.emit_all(
-                        "onmidinoteon",
-                        NoteOnPayload{
-                            channel: status_byte & 0x0F,
-                            pitch: message[1],
-                            velocity: message[2]
-                        }
-                    ).expect("failed to emit onmidinoteon event");
+                    new_app
+                        .emit_all(
+                            "onmidinoteon",
+                            NoteOnPayload {
+                                channel: status_byte & 0x0F,
+                                pitch: message[1],
+                                velocity: message[2],
+                            },
+                        )
+                        .expect("failed to emit onmidinoteon event");
                 } else if status_byte >> 4 == 0x8 {
-                    new_app.emit_all(
-                        "onmidinoteoff",
-                        NoteOffPayload{
-                            channel: status_byte & 0x0F,
-                            pitch: message[1],
-                            velocity: message[2]
-                        }
-                    ).expect("failed to emit onmidinoteoff event");
+                    new_app
+                        .emit_all(
+                            "onmidinoteoff",
+                            NoteOffPayload {
+                                channel: status_byte & 0x0F,
+                                pitch: message[1],
+                                velocity: message[2],
+                            },
+                        )
+                        .expect("failed to emit onmidinoteoff event");
                 }
             },
             (),
@@ -118,7 +124,8 @@ pub fn setup(app: AppHandle) -> Result<(), ()> {
             stdin().read_line(&mut input).unwrap();
             out_ports
                 .get(input.trim().parse::<usize>().unwrap())
-                .ok_or("invalid output port selected").unwrap()
+                .ok_or("invalid output port selected")
+                .unwrap()
         }
     };
 
@@ -127,7 +134,8 @@ pub fn setup(app: AppHandle) -> Result<(), ()> {
 
     app.manage(crate::MidiHandles {
         conn_in: Mutex::new(conn_in),
-        conn_out: Mutex::new(conn_out)
+        conn_out: Mutex::new(conn_out),
     });
+    println!("ajdfsaskf");
     Ok(())
 }

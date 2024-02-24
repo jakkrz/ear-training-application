@@ -20,7 +20,7 @@ import { listen } from "@tauri-apps/api/event";
 type Note = string;
 
 const NOTE_SEQUENCE_LENGTH = 5;
-const TIME_BETWEEN_NOTES = 3000;
+const TIME_BETWEEN_NOTES = 2000;
 const TIME_BEFORE_FIRST_NOTE = 1000;
 const STARTING_NOTE = "C/4";
 
@@ -185,8 +185,15 @@ const mapOffsetToNoteUsingFlats = [
 ];
 const USE_SHARPS = true;
 
-function noteStringsAreEquivalent(noteStringA: string, noteStringB: string) {
-  return noteStringToPitch(noteStringA) == noteStringToPitch(noteStringB);
+function noteStringsAreEquivalent(
+  noteStringA: string | undefined,
+  noteStringB: string | undefined
+): boolean {
+  if (noteStringA !== undefined && noteStringB !== undefined) {
+    return noteStringToPitch(noteStringA) == noteStringToPitch(noteStringB);
+  }
+
+  return false;
 }
 
 function pitchToNoteString(pitch: number): string {
@@ -228,6 +235,7 @@ interface MidiNoteOnEvent {
 }
 
 export default function NoteRecognitionGame() {
+  console.log("Render");
   // const [gameState, setGameState] = useState<GameState>("PlayingSounds");
   // const studentNotesPlayed = studentNotes.length;
   // const menuActivated = studentNotesPlayed == NOTE_SEQUENCE_LENGTH;
@@ -266,8 +274,12 @@ export default function NoteRecognitionGame() {
         console.log(`Playing ${teacherNotes[notesPlayed]}`);
         const notePitch = noteStringToPitch(teacherNotes[notesPlayed]);
         const noteVelocity = 127;
-        invoke("play_note", { pitch: notePitch, velocity: noteVelocity, duration: TIME_BETWEEN_NOTES });
-        
+        invoke("play_note", {
+          pitch: notePitch,
+          velocity: noteVelocity,
+          duration: TIME_BETWEEN_NOTES,
+        });
+
         notesPlayed++;
         if (notesPlayed < teacherNotes.length) {
           currentTimeoutId = setTimeout(playNote, TIME_BETWEEN_NOTES);
