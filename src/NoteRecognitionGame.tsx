@@ -148,7 +148,7 @@ export default function NoteRecognitionGame()  {
             let unlistenPromise = listen("onmidinoteon", (event: MidiNoteOnEvent) => {
                 if (acceptInput && studentNotes.length < teacherNotes.length) {
                     let pitch = event.payload.pitch;
-                    setStudentNotes([...studentNotes, pitchToNoteString(pitch)]);
+                    setStudentNotes((studentNotes) => [...studentNotes, pitchToNoteString(pitch)]);
                 }
             })
 
