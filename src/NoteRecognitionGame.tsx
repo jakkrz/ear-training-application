@@ -19,7 +19,7 @@ import { listen } from "@tauri-apps/api/event";
 
 type Note = string;
 
-const NOTE_SEQUENCE_LENGTH = 5;
+const NOTE_SEQUENCE_LENGTH = 3;
 const TIME_BETWEEN_NOTES = 2000;
 const TIME_BEFORE_FIRST_NOTE = 1000;
 const STARTING_NOTE = "C/4";
@@ -190,7 +190,8 @@ function noteStringsAreEquivalent(
   noteStringB: string | undefined
 ): boolean {
   if (noteStringA !== undefined && noteStringB !== undefined) {
-    return noteStringToPitch(noteStringA) == noteStringToPitch(noteStringB);
+    console.log(noteStringToPitch(noteStringA), noteStringToPitch(noteStringB));
+    return noteStringToPitch(noteStringA) === noteStringToPitch(noteStringB);
   }
 
   return false;
@@ -234,17 +235,24 @@ interface MidiNoteOnEvent {
   };
 }
 
-export default function NoteRecognitionGame() {
-  console.log("Render");
-  // const [gameState, setGameState] = useState<GameState>("PlayingSounds");
-  // const studentNotesPlayed = studentNotes.length;
-  // const menuActivated = studentNotesPlayed == NOTE_SEQUENCE_LENGTH;
+function noteSequencesAreEquivalent(seqA: Note[], seqB: Note[]): boolean {
+  if (seqA.length !== seqB.length) return false;
 
+  for (const [index, note] of seqA.entries()) {
+    if (!noteStringsAreEquivalent(note, seqB[index])) return false;
+  }
+
+  return true;
+}
+
+export default function NoteRecognitionGame() {
   const [teacherNotes, setTeacherNotes] = useState<Note[]>(
     generateNoteSequence()
   );
   const [studentNotes, setStudentNotes] = useState<Note[]>([]);
   const [acceptInput, setAcceptInput] = useState(false);
+  const [gotCorrect, setGotCorrect] = useState(0);
+  const [gotWrong, setGotWrong] = useState(0);
   let menuActivated = studentNotes.length >= teacherNotes.length;
 
   useEffect(() => {
@@ -254,7 +262,6 @@ export default function NoteRecognitionGame() {
 
       let unlistenPromise = listen("onmidinoteon", (event: MidiNoteOnEvent) => {
         if (acceptInput && studentNotesPlayed < teacherNotesPlayed) {
-          console.log("yip");
           let pitch = event.payload.pitch;
           setStudentNotes((studentNotes) => [
             ...studentNotes,
@@ -271,7 +278,6 @@ export default function NoteRecognitionGame() {
       let currentTimeoutId: ReturnType<typeof setTimeout> = -1;
       let notesPlayed = 0;
       function playNote() {
-        console.log(`Playing ${teacherNotes[notesPlayed]}`);
         const notePitch = noteStringToPitch(teacherNotes[notesPlayed]);
         const noteVelocity = 127;
         invoke("play_note", {
@@ -298,12 +304,28 @@ export default function NoteRecognitionGame() {
   async function handleExitButtonClick() {
     await exit(0);
   }
-  function handleReplayButtonClick() {}
+
   function handleNextButtonClick() {
     setTeacherNotes(generateNoteSequence(NOTE_SEQUENCE_LENGTH));
     setStudentNotes([]);
     setAcceptInput(false);
+    if (noteSequencesAreEquivalent(teacherNotes, studentNotes)) {
+      setGotCorrect(gotCorrect + 1);
+    } else {
+      setGotWrong(gotWrong + 1);
+    }
   }
+
+  useEffect(() => {
+    function onKeyPress(evt: KeyboardEvent) {
+      if (evt.code === "Space" && menuActivated) {
+        handleNextButtonClick();
+      }
+    }
+    document.addEventListener("keypress", onKeyPress);
+
+    return () => document.removeEventListener("keypress", onKeyPress);
+  }, [menuActivated]);
 
   return (
     <div className="game-container">
@@ -313,17 +335,14 @@ export default function NoteRecognitionGame() {
       />
       <div className="button-container">
         <button onClick={handleExitButtonClick}>Exit</button>
-        <button disabled={!menuActivated} onClick={handleReplayButtonClick}>
-          Replay sound
-        </button>
         <button disabled={!menuActivated} onClick={handleNextButtonClick}>
-          Next (press a note)
+          Next (space)
         </button>
       </div>
       <div className="points-container">
-        <span className="bold">Correct:</span> 0
+        <span className="bold">Correct:</span> {gotCorrect}
         <br />
-        <span className="bold">Wrong:</span> 0
+        <span className="bold">Wrong:</span> {gotWrong}
       </div>
     </div>
   );
