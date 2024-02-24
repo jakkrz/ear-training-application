@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { exit } from "@tauri-apps/api/process";
+import { invoke } from "@tauri-apps/api/tauri";
 
 import Vex, {
   SVGContext,
@@ -263,6 +264,10 @@ export default function NoteRecognitionGame() {
       let notesPlayed = 0;
       function playNote() {
         console.log(`Playing ${teacherNotes[notesPlayed]}`);
+        const notePitch = noteStringToPitch(teacherNotes[notesPlayed]);
+        const noteVelocity = 127;
+        invoke("play_note", { pitch: notePitch, velocity: noteVelocity, duration: TIME_BETWEEN_NOTES });
+        
         notesPlayed++;
         if (notesPlayed < teacherNotes.length) {
           currentTimeoutId = setTimeout(playNote, TIME_BETWEEN_NOTES);
