@@ -190,7 +190,6 @@ function noteStringsAreEquivalent(
   noteStringB: string | undefined
 ): boolean {
   if (noteStringA !== undefined && noteStringB !== undefined) {
-    console.log(noteStringToPitch(noteStringA), noteStringToPitch(noteStringB));
     return noteStringToPitch(noteStringA) === noteStringToPitch(noteStringB);
   }
 

@@ -136,6 +136,5 @@ pub fn setup(app: AppHandle) -> Result<(), ()> {
         conn_in: Mutex::new(conn_in),
         conn_out: Mutex::new(conn_out),
     });
-    println!("ajdfsaskf");
     Ok(())
 }
