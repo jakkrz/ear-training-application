@@ -66,7 +66,7 @@ function NoteRecognitionStave({
     const outputDiv = outputDivRef.current!;
     const renderer = new Renderer(outputDiv, Renderer.Backends.SVG);
 
-    renderer.resize(500, 100);
+    renderer.resize(500, 120);
     const context = renderer.getContext() as SVGContext;
 
     const stave = new Stave(0, 0, 495);
@@ -318,6 +318,11 @@ export default function NoteRecognitionGame() {
   useEffect(() => {
     function onKeyPress(evt: KeyboardEvent) {
       if (evt.code === "Space" && menuActivated) {
+        if (evt.target === document.body) {
+          // prevent space bar scrolling page
+          evt.preventDefault();
+        }
+
         handleNextButtonClick();
       }
     }
