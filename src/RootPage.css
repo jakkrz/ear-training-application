@@ -1,0 +1,37 @@
+.content {
+    margin: 0 auto;
+    padding: 30px;
+
+    height: 100dvh;
+    max-width: 700px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    text-align: center;
+    font-size: 50px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    gap: 10px;
+}
+
+.page-link {
+    font-size: 30px;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid gray;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.page-link:hover {
+    border: 1px solid black;
+}
