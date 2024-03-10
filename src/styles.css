@@ -6,3 +6,18 @@ body {
     margin: 0px;
     padding: 0px;
 }
+
+.return-button::before {
+    content: "< ";
+}
+
+.return-button {
+    position: absolute;
+    margin: 20px;
+    color: gray;
+    text-decoration: none;
+}
+
+.return-button:hover {
+    color: black;
+}
