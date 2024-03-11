@@ -1,0 +1,30 @@
+.training-list-container {
+    flex: 1;
+    overflow: scroll;
+}
+
+.training {
+    margin: 10px 0;
+    font-size: 30px;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid gray;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+h1 {
+    flex: 0;
+}
+
+.trainpage-content {
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 30px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+}
