@@ -8,14 +8,14 @@ export default function TrainPage() {
             <h1>Training</h1>
             <div className={classes.trainingListContainer}>
                 <h2>Exercises</h2>
-                <Link to={"/train/exercises/repeat-notes/config"} className={classes.training}>Repeat Notes</Link>
-                <Link to={"/train/exercises/play-chords/config"} className={classes.training}>Play Chords</Link>
+                <Link to={"/train/exercises/play-notes-by-ear/config"} className="navigation-button">Play Notes by Ear</Link>
+                <Link to={"/train/exercises/play-chords-by-name/config"} className="navigation-button">Play Chords by Name</Link>
 
                 <h2>Games</h2>
-                <Link to={"/train/games/staff-wars/config"} className={classes.training}>Staff Wars</Link>
+                <Link to={"/train/games/staff-wars/config"} className="navigation-button">Staff Wars</Link>
                 <h2>Tests</h2>
-                <Link to={"/train/tests/repeat-notes/config"} className={classes.training}>Repeat Notes (Test)</Link>
-                <Link to={"/train/tests/staff-wars/config"} className={classes.training}>Staff Wars (Test)</Link>
+                <Link to={"/train/tests/repeat-notes/config"} className="navigation-button">Repeat Notes (Test)</Link>
+                <Link to={"/train/tests/staff-wars/config"} className="navigation-button">Staff Wars (Test)</Link>
             </div>
         </div>
     </>);

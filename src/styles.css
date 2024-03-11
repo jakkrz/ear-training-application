@@ -21,3 +21,30 @@ body {
 .return-button:hover {
     color: black;
 }
+
+.navigation-button {
+    font-size: 30px;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid gray;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+.navigation-button:hover {
+    border: 1px solid black;
+}
+
+.config-content {
+    margin: 0 auto;
+    padding: 30px;
+
+    height: 100dvh;
+    max-width: 500px;
+}
+
+.config-scroll-box {
+    overflow: scroll;
+}

@@ -6,9 +6,9 @@ export default function RootPage() {
         <div className={classes.content}>
             <h1>Ear Training Application</h1>
             <div className={classes.buttonContainer}>
-            <Link to={"/train"} className={classes.pageLink}>Train</Link>
-            <Link to={"/analytics"} className={classes.pageLink}>Analytics</Link>
-            <Link to={"/improvise"} className={classes.pageLink}>Improvise</Link>
+            <Link to={"/train"} className="navigation-button">Train</Link>
+            <Link to={"/analytics"} className="navigation-button">Analytics</Link>
+            <Link to={"/improvise"} className="navigation-button">Improvise</Link>
             </div>
         </div>
     );

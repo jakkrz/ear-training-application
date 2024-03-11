@@ -3,16 +3,8 @@
     overflow: scroll;
 }
 
-.training {
+[class*="navigation-button"] {
     margin: 10px 0;
-    font-size: 30px;
-    text-align: center;
-    border-radius: 10px;
-    border: 1px solid gray;
-    padding: 10px;
-    text-decoration: none;
-    color: black;
-    display: block;
 }
 
 h1 {

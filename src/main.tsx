@@ -13,6 +13,8 @@ import {
 } from "react-router-dom";
 
 import ErrorPage from "./error-page";
+import PlayNotesByEarConfigPage from "./trainings/exercises/PlayNotesByEarConfigPage";
+import PlayNotesByEarPage from "./trainings/exercises/PlayNotesByEarPage";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +32,14 @@ const router = createBrowserRouter([
     }, {
         path: "/analytics",
         element: <AnalyticsPage/>,
+        errorElement: <ErrorPage/>
+    }, {
+        path: "/train/exercises/play-notes-by-ear/config",
+        element: <PlayNotesByEarConfigPage/>,
+        errorElement: <ErrorPage/>,
+    }, {
+        path: "/train/exercises/play-notes-by-ear/actual",
+        element: <PlayNotesByEarPage/>,
         errorElement: <ErrorPage/>
     }
 ])
