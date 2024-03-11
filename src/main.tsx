@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+
 import RootPage from "./RootPage";
 import TrainPage from "./TrainPage";
 import AnalyticsPage from "./AnalyticsPage";
 import ImprovisePage from "./ImprovisePage";
+
 import "./styles.css";
 import {
     createBrowserRouter,

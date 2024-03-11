@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import "./RootPage.css";
+import classes from "./RootPage.module.css";
 
 export default function RootPage() {
     return (
-        <div className="content">
+        <div className={classes.content}>
             <h1>Ear Training Application</h1>
-            <div className="button-container">
-            <Link to={"/train"} className="page-link">Train</Link>
-            <Link to={"/analytics"} className="page-link">Analytics</Link>
-            <Link to={"/improvise"} className="page-link">Improvise</Link>
+            <div className={classes.buttonContainer}>
+            <Link to={"/train"} className={classes.pageLink}>Train</Link>
+            <Link to={"/analytics"} className={classes.pageLink}>Analytics</Link>
+            <Link to={"/improvise"} className={classes.pageLink}>Improvise</Link>
             </div>
         </div>
     );

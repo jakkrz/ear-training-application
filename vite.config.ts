@@ -13,5 +13,10 @@ export default defineConfig(async () => ({
   server: {
     port: 1420,
     strictPort: true,
+  },
+  css: {
+    modules: {
+      localsConvention: "camelCaseOnly"
+    }
   }
 }));
