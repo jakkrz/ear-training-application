@@ -13,7 +13,8 @@
     "@tauri-apps/api": "^1.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^6.22.3",
+    "vexflow": "^4.2.3"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.6",
