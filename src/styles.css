@@ -38,6 +38,9 @@ body {
 }
 
 .config-content {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
     margin: 0 auto;
     padding: 30px;
 
@@ -46,5 +49,6 @@ body {
 }
 
 .config-scroll-box {
+    padding-top: 10px;
     overflow: scroll;
 }
