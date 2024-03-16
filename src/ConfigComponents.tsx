@@ -39,17 +39,28 @@ export function CounterOption({value, setValue, minValue, maxValue, children}: C
     </label>;
 }
 
-type MidiSourceOptionProps = PropsWithChildren<{
+export type InputMethod = number | "microphone" | null
 
+type MidiSourceOptionProps = PropsWithChildren<{
+    value: InputMethod,
+    setValue: (value: InputMethod) => void,
 }>;
 
-export function MidiSourceOption({children}: MidiSourceOptionProps) {
-    const [selectedOption, setSelectedOption] = useState("default");
+export function MidiSourceOption({value, setValue, children}: MidiSourceOptionProps) {
+    let selectedOption;
 
-    const [devices, setDevices] = useState([]);
+    if (typeof value === "number") {
+        selectedOption = value.toString();
+    } else if (value === "microphone") {
+        selectedOption = "m";
+    } else {
+        selectedOption = "default";
+    }
+
+    const [devices, setDevices] = useState<String[]>([]);
 
     async function scanForDevices() {
-        setDevices(await invoke("scan_for_devices"));
+        setDevices(await invoke("scan_for_devices") as Array<String>);
     }
 
     useEffect(() => {
@@ -57,14 +68,21 @@ export function MidiSourceOption({children}: MidiSourceOptionProps) {
     }, []);
 
     function onSelectedChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        setSelectedOption(e.target.value);
+        let newValue = e.target.value;
+        if (!isNaN(parseInt(newValue))) {
+            setValue(parseInt(e.target.value));
+        } else if (newValue === "m") {
+            setValue("microphone")
+        } else {
+            setValue(null);
+        }
     }
 
     return <label className={classes.configOption}>
         <span className={classes.optionLabel}>{children}&nbsp;</span>
         <select value={selectedOption} onChange={onSelectedChange}>
             <option value="default">Please choose your input device</option>
-            {devices}
+            {devices.map((device, index) => <option value={index.toString()}>{device}</option>)}
             <option value="m">Microphone</option>
         </select>
         <button onClick={scanForDevices}>Rescan</button>
