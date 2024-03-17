@@ -12,15 +12,27 @@ type Config = {
 export default function PlayNotesByEarPage() {
     let location = useLocation();
     let state = location.state as Config;
+    const [connected, setConnected] = useState(false);
+
+    useEffect(() => {
+        if (typeof state.inputMethod == "number") {
+            invoke("connect_input", { portN: state.inputMethod });
+        }
+
+        setConnected(true);
+
+        return () => {
+            invoke("disconnect_input");
+        };
+    }, [state]);
 
     return <>
         <Link to={"/train"} className="return-button">go back to training</Link>
-        <Game {...state}/>
+        {connected && <Game {...state}/>}
     </>;
 }
 
 import { useState, useEffect, useRef } from "react";
-import { exit } from "@tauri-apps/api/process";
 import { invoke } from "@tauri-apps/api/tauri";
 
 import Vex, {
