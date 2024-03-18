@@ -50,7 +50,7 @@ import {
 type Note = string;
 type NoteWithCreationTick = [number, Note];
 
-const TICK_SPAN = 1000;
+const TICK_SPAN = 2000;
 
 function getAccidentalsFromNote(note: string): string {
   let [baseNote, _octave] = note.split("/");
@@ -103,6 +103,7 @@ function purgeListOfNote(
     let [_, note] = noteWithCreationTick;
 
     if (noteStringsAreEquivalent(note, noteToPurge)) {
+      console.log("p");
       purgedSomething = true;
     } else {
       resultList = [...resultList, noteWithCreationTick];
@@ -150,6 +151,8 @@ function Game(props: any) {
           );
           setLhNotes(newLhNotes);
 
+          console.log(purgedSomethingRh, purgedSomethingLh);
+
           if (!(purgedSomethingRh || purgedSomethingLh)) {
             loseLife();
           }
@@ -160,7 +163,7 @@ function Game(props: any) {
         unlistenPromise.then((unlisten) => unlisten());
       };
     }
-  }, [gameState, livesRemaining]);
+  }, [gameState, livesRemaining, rhNotes, lhNotes]);
 
   useInterval(() => {
     if (gameState !== "gameOver") {
@@ -217,7 +220,7 @@ function Game(props: any) {
         ]);
       }
     }
-  }, 2000);
+  }, 3000);
 
   let points = Math.floor(ticks * 0.01);
 
