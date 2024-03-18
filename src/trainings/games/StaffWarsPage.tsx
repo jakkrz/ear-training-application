@@ -123,7 +123,7 @@ function Game(props: any) {
 
   function loseLife() {
     setLivesRemaining((lives) => lives - 1);
-
+    console.log(livesRemaining - 1);
     if (livesRemaining - 1 <= 0) {
       setGameState("gameOver");
       setRhNotes([]);
@@ -160,7 +160,7 @@ function Game(props: any) {
         unlistenPromise.then((unlisten) => unlisten());
       };
     }
-  }, [gameState]);
+  }, [gameState, livesRemaining]);
 
   useInterval(() => {
     if (gameState !== "gameOver") {
