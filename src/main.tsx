@@ -15,6 +15,8 @@ import {
 import ErrorPage from "./error-page";
 import PlayNotesByEarConfigPage from "./trainings/exercises/PlayNotesByEarConfigPage";
 import PlayNotesByEarPage from "./trainings/exercises/PlayNotesByEarPage";
+import StaffWarsPage from "./trainings/games/StaffWarsPage";
+import StaffWarsConfigPage from "./trainings/games/StaffWarsConfigPage";
 
 const router = createBrowserRouter([
     {
@@ -40,6 +42,14 @@ const router = createBrowserRouter([
     }, {
         path: "/train/exercises/play-notes-by-ear/actual",
         element: <PlayNotesByEarPage/>,
+        errorElement: <ErrorPage/>
+    }, {
+        path: "/train/games/staff-wars/actual",
+        element: <StaffWarsPage/>,
+        errorElement: <ErrorPage/>
+    }, {
+        path: "/train/games/staff-wars/config",
+        element: <StaffWarsConfigPage/>,
         errorElement: <ErrorPage/>
     }
 ])

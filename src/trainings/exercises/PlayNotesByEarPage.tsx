@@ -361,21 +361,21 @@ function Game(props: Config) {
   }, [menuActivated]);
 
   return (
-    <div className={classes.gameContainer}>
+    <div className="game-container">
       <NoteRecognitionStave
         teacherNotes={teacherNotes}
         studentNotes={studentNotes}
         {...props}
       />
-      <div className={classes.buttonContainer}>
+      <div className="button-container">
         <button disabled={!menuActivated} onClick={handleNextButtonClick}>
           Next (space)
         </button>
       </div>
-      <div className={classes.pointsContainer}>
-        <span className={classes.bold}>Correct:</span> {gotCorrect}
+      <div className="points-container">
+        <span className="bold">Correct:</span> {gotCorrect}
         <br />
-        <span className={classes.bold}>Wrong:</span> {gotWrong}
+        <span className="bold">Wrong:</span> {gotWrong}
       </div>
     </div>
   );
