@@ -3,32 +3,35 @@ import { InputMethod } from "../../ConfigComponents";
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 
-
 interface Config {
-    inputMethod: InputMethod,
-};
+  inputMethod: InputMethod;
+}
 
 export default function StaffWarsPage() {
-    let location = useLocation();
-    let state = location.state as Config;
-    const [connected, setConnected] = useState(false);
+  let location = useLocation();
+  let state = location.state as Config;
+  const [connected, setConnected] = useState(false);
 
-    useEffect(() => {
-        if (typeof state.inputMethod == "number") {
-            invoke("connect_input", { portN: state.inputMethod });
-        }
+  useEffect(() => {
+    if (typeof state.inputMethod == "number") {
+      invoke("connect_input", { portN: state.inputMethod });
+    }
 
-        setConnected(true);
+    setConnected(true);
 
-        return () => {
-            invoke("disconnect_input");
-        };
-    }, [state]);
+    return () => {
+      invoke("disconnect_input");
+    };
+  }, [state]);
 
-    return <>
-        <Link to={"/train"} className="return-button">go back to training</Link>
-        {connected && <Game {...state}/>}
-    </>;
+  return (
+    <>
+      <Link to={"/train"} className="return-button">
+        go back to training
+      </Link>
+      {connected && <Game {...state} />}
+    </>
+  );
 }
 
 import { useState, useEffect, useRef } from "react";
@@ -41,7 +44,7 @@ import {
   Accidental,
   Stave,
   Renderer,
-  StaveConnector
+  StaveConnector,
 } from "vexflow";
 
 type Note = string;
@@ -59,11 +62,11 @@ function randomInteger(min: number, max: number) {
 }
 
 function generateRhNote(): Note {
-    return pitchToNoteString(randomInteger(57, 84));
+  return pitchToNoteString(randomInteger(57, 84));
 }
 
 function generateLhNote(): Note {
-    return pitchToNoteString(randomInteger(36, 64));
+  return pitchToNoteString(randomInteger(36, 64));
 }
 
 const useInterval = (callback: () => void, delay: number) => {
@@ -76,9 +79,9 @@ const useInterval = (callback: () => void, delay: number) => {
   useEffect(() => {
     const tick = () => {
       if (savedCallback.current !== undefined) {
-          savedCallback.current();
+        savedCallback.current();
       }
-    }
+    };
     if (delay !== null) {
       let id = setInterval(tick, delay);
       return () => clearInterval(id);
@@ -89,21 +92,24 @@ const useInterval = (callback: () => void, delay: number) => {
 const ACCELERATION = 0.00005;
 type GameState = "playing" | "gameOver";
 
-function purgeListOfNote(notes: NoteWithCreationTick[], noteToPurge: Note): [NoteWithCreationTick[], boolean] {
-    let resultList: NoteWithCreationTick[] = [];
-    let purgedSomething = false;
+function purgeListOfNote(
+  notes: NoteWithCreationTick[],
+  noteToPurge: Note
+): [NoteWithCreationTick[], boolean] {
+  let resultList: NoteWithCreationTick[] = [];
+  let purgedSomething = false;
 
-    for (const noteWithCreationTick of notes) {
-        let [_, note] = noteWithCreationTick;
+  for (const noteWithCreationTick of notes) {
+    let [_, note] = noteWithCreationTick;
 
-        if (noteStringsAreEquivalent(note, noteToPurge)) {
-            purgedSomething = true;
-        } else {
-            resultList = [...resultList, noteWithCreationTick]
-        }
+    if (noteStringsAreEquivalent(note, noteToPurge)) {
+      purgedSomething = true;
+    } else {
+      resultList = [...resultList, noteWithCreationTick];
     }
+  }
 
-    return [resultList, purgedSomething];
+  return [resultList, purgedSomething];
 }
 
 function Game(props: any) {
@@ -117,11 +123,11 @@ function Game(props: any) {
 
   function loseLife() {
     setLivesRemaining((lives) => lives - 1);
-    
+
     if (livesRemaining - 1 <= 0) {
-        setGameState("gameOver");
-        setRhNotes([]);
-        setLhNotes([]);
+      setGameState("gameOver");
+      setRhNotes([]);
+      setLhNotes([]);
     }
   }
 
@@ -131,11 +137,17 @@ function Game(props: any) {
         if (gameState == "playing") {
           let pitch = event.payload.pitch;
           let notePlayed = pitchToNoteString(pitch);
-          
-          const [newRhNotes, purgedSomethingRh] = purgeListOfNote(rhNotes, notePlayed);
+
+          const [newRhNotes, purgedSomethingRh] = purgeListOfNote(
+            rhNotes,
+            notePlayed
+          );
           setRhNotes(newRhNotes);
 
-          const [newLhNotes, purgedSomethingLh] = purgeListOfNote(lhNotes, notePlayed);
+          const [newLhNotes, purgedSomethingLh] = purgeListOfNote(
+            lhNotes,
+            notePlayed
+          );
           setLhNotes(newLhNotes);
 
           if (!(purgedSomethingRh || purgedSomethingLh)) {
@@ -152,120 +164,149 @@ function Game(props: any) {
 
   useInterval(() => {
     if (gameState !== "gameOver") {
-        let nextTick = ticks + noteSpeed;
-        setTicks(nextTick);
-        ticksRef.current = nextTick;
-        setNoteSpeed((noteSpeed) => noteSpeed + ACCELERATION);
-        
-        let rhNotesWereFilteredOut = false;
-        let filteredRhNotes: NoteWithCreationTick[] = [];
+      let nextTick = ticks + noteSpeed;
+      setTicks(nextTick);
+      ticksRef.current = nextTick;
+      setNoteSpeed((noteSpeed) => noteSpeed + ACCELERATION);
 
-        for (const note of rhNotes) {
-            const [creationTick, _] = note;
-            if (nextTick - creationTick > TICK_SPAN) {
-                rhNotesWereFilteredOut = true;
-            } else {
-                filteredRhNotes = [...filteredRhNotes, note];
-            }
+      let rhNotesWereFilteredOut = false;
+      let filteredRhNotes: NoteWithCreationTick[] = [];
+
+      for (const note of rhNotes) {
+        const [creationTick, _] = note;
+        if (nextTick - creationTick > TICK_SPAN) {
+          rhNotesWereFilteredOut = true;
+        } else {
+          filteredRhNotes = [...filteredRhNotes, note];
         }
+      }
 
-        setRhNotes(filteredRhNotes);
+      setRhNotes(filteredRhNotes);
 
-        let lhNotesWereFilteredOut = false;
-        let filteredLhNotes: NoteWithCreationTick[] = [];
+      let lhNotesWereFilteredOut = false;
+      let filteredLhNotes: NoteWithCreationTick[] = [];
 
-        for (const note of lhNotes) {
-            const [creationTick, _] = note;
-            if (nextTick - creationTick > TICK_SPAN) {
-                lhNotesWereFilteredOut = true;
-            } else {
-                filteredLhNotes = [...filteredLhNotes, note];
-            }
+      for (const note of lhNotes) {
+        const [creationTick, _] = note;
+        if (nextTick - creationTick > TICK_SPAN) {
+          lhNotesWereFilteredOut = true;
+        } else {
+          filteredLhNotes = [...filteredLhNotes, note];
         }
+      }
 
-        setLhNotes(filteredLhNotes);
+      setLhNotes(filteredLhNotes);
 
-        if (rhNotesWereFilteredOut || lhNotesWereFilteredOut) {
-            loseLife();
-        }
+      if (rhNotesWereFilteredOut || lhNotesWereFilteredOut) {
+        loseLife();
+      }
     }
   }, 1);
 
   useInterval(() => {
     if (gameState !== "gameOver") {
-        if (Math.random() < 0.5) {
-            setRhNotes((rhNotes) => [...rhNotes, [ticksRef.current, generateRhNote()]]);
-        } else {
-            setLhNotes((lhNotes) => [...lhNotes, [ticksRef.current, generateLhNote()]]);
-        }
+      if (Math.random() < 0.5) {
+        setRhNotes((rhNotes) => [
+          ...rhNotes,
+          [ticksRef.current, generateRhNote()],
+        ]);
+      } else {
+        setLhNotes((lhNotes) => [
+          ...lhNotes,
+          [ticksRef.current, generateLhNote()],
+        ]);
+      }
     }
   }, 2000);
-
 
   let points = Math.floor(ticks * 0.01);
 
   function onRestartButtonClick() {
-      setTicks(0);
-      ticksRef.current = 0;
-      setNoteSpeed(1);
-      setLivesRemaining(3);
-      setGameState("playing");
+    setTicks(0);
+    ticksRef.current = 0;
+    setNoteSpeed(1);
+    setLivesRemaining(3);
+    setGameState("playing");
   }
 
-  return (<>
-    <div className="game-container">
+  return (
+    <>
+      <div className="game-container">
         {gameState == "gameOver" && <h1>Game Over!</h1>}
-      <NoteStave rhNotes={rhNotes} lhNotes={lhNotes} ticks={ticks} {...props}/>
-      <div className="button-container">
-        <button disabled={gameState == "playing"} onClick={onRestartButtonClick}>
-          Restart
-        </button>
+        <NoteStave
+          rhNotes={rhNotes}
+          lhNotes={lhNotes}
+          ticks={ticks}
+          {...props}
+        />
+        <div className="button-container">
+          <button
+            disabled={gameState == "playing"}
+            onClick={onRestartButtonClick}
+          >
+            Restart
+          </button>
+        </div>
+        <div className="points-container">
+          <span className="bold">Lives remaining:</span> {livesRemaining}
+          <br />
+          <span className="bold">Note Speed:</span> {noteSpeed.toPrecision(4)}
+          <br />
+          <span className="bold">Points:</span> {points}
+        </div>
       </div>
-      <div className="points-container">
-        <span className="bold">Lives remaining:</span> {livesRemaining}
-        <br />
-        <span className="bold">Note Speed:</span> {noteSpeed.toPrecision(4)}
-        <br />
-        <span className="bold">Points:</span> {points}
-      </div>
-    </div>
-  </>);
+    </>
+  );
 }
 
 type NoteWithPositionSpecifier = [number, Note];
-type ClefType = "treble" | "bass"
+type ClefType = "treble" | "bass";
 
-function createNoteVoice(note: Note, shiftXPercent: number, staveWidth: number, clefType: ClefType) {
-    // Create a voice in 4/4 and add above notes
-    const voice = new Voice({ num_beats: 1, beat_value: 4 });
-    let accidentals = getAccidentalsFromNote(note);
-    let staveNote = new StaveNote({ clef: clefType, keys: [note], duration: "q" });
+function createNoteVoice(
+  note: Note,
+  shiftXPercent: number,
+  staveWidth: number,
+  clefType: ClefType
+) {
+  // Create a voice in 4/4 and add above notes
+  const voice = new Voice({ num_beats: 1, beat_value: 4 });
+  let accidentals = getAccidentalsFromNote(note);
+  let staveNote = new StaveNote({
+    clef: clefType,
+    keys: [note],
+    duration: "q",
+  });
 
-    if (accidentals !== "") {
-        staveNote.addModifier(new Accidental(accidentals));
-    }
+  if (accidentals !== "") {
+    staveNote.addModifier(new Accidental(accidentals));
+  }
 
-    voice.addTickables([staveNote]);
-    
-    new Formatter().joinVoices([voice]).format([voice], staveWidth);
-    staveNote.getTickContext().setX(staveWidth * shiftXPercent);
+  voice.addTickables([staveNote]);
 
-    return voice;
+  new Formatter().joinVoices([voice]).format([voice], staveWidth);
+  staveNote.getTickContext().setX(staveWidth * shiftXPercent);
+
+  return voice;
 }
 
-function drawNotesOnStaveContextAtProgression(notes: NoteWithPositionSpecifier[], context: SVGContext, stave: Stave, clefType: ClefType) {
-    for (const [progression, note] of notes) {
-        createNoteVoice(note, 1 - progression, 510, clefType).draw(context, stave);
-    }
+function drawNotesOnStaveContextAtProgression(
+  notes: NoteWithPositionSpecifier[],
+  context: SVGContext,
+  stave: Stave,
+  clefType: ClefType
+) {
+  for (const [progression, note] of notes) {
+    createNoteVoice(note, 1 - progression, 510, clefType).draw(context, stave);
+  }
 }
 
 type NoteStaveProps = {
-    rhNotes: NoteWithCreationTick[],
-    lhNotes: NoteWithCreationTick[],
-    ticks: number,
+  rhNotes: NoteWithCreationTick[];
+  lhNotes: NoteWithCreationTick[];
+  ticks: number;
 };
 
-function NoteStave({rhNotes, lhNotes, ticks}: NoteStaveProps) {
+function NoteStave({ rhNotes, lhNotes, ticks }: NoteStaveProps) {
   const outputDivRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -276,40 +317,62 @@ function NoteStave({rhNotes, lhNotes, ticks}: NoteStaveProps) {
     const context = renderer.getContext() as SVGContext;
 
     const rhStave = new Stave(20, 0, 570);
-    rhStave.addClef("treble")
+    rhStave.addClef("treble");
     rhStave.setContext(context).draw();
 
     const lhStave = new Stave(20, 80, 570);
-    lhStave.addClef("bass")
+    lhStave.addClef("bass");
     lhStave.setContext(context).draw();
 
     const brace = new StaveConnector(rhStave, lhStave);
     brace.setType(StaveConnector.type.BRACE);
     brace.setContext(context).draw();
-    
+
     let rhNotesWithPositionSpecifier: NoteWithPositionSpecifier[] = [];
 
     for (const noteWithCreationTick of rhNotes) {
-        const [creationTick, currentNote] = noteWithCreationTick;
+      const [creationTick, currentNote] = noteWithCreationTick;
 
-        let positionSpecifier = (ticks - creationTick) / TICK_SPAN;
-        let noteWithPositionSpecifier: NoteWithPositionSpecifier = [positionSpecifier, currentNote];
-        rhNotesWithPositionSpecifier = [...rhNotesWithPositionSpecifier, noteWithPositionSpecifier];
+      let positionSpecifier = (ticks - creationTick) / TICK_SPAN;
+      let noteWithPositionSpecifier: NoteWithPositionSpecifier = [
+        positionSpecifier,
+        currentNote,
+      ];
+      rhNotesWithPositionSpecifier = [
+        ...rhNotesWithPositionSpecifier,
+        noteWithPositionSpecifier,
+      ];
     }
 
-    drawNotesOnStaveContextAtProgression(rhNotesWithPositionSpecifier, context, rhStave, "treble");
+    drawNotesOnStaveContextAtProgression(
+      rhNotesWithPositionSpecifier,
+      context,
+      rhStave,
+      "treble"
+    );
 
     let lhNotesWithPositionSpecifier: NoteWithPositionSpecifier[] = [];
 
     for (const noteWithCreationTick of lhNotes) {
-        const [creationTick, currentNote] = noteWithCreationTick;
+      const [creationTick, currentNote] = noteWithCreationTick;
 
-        let positionSpecifier = (ticks - creationTick) / TICK_SPAN;
-        let noteWithPositionSpecifier: NoteWithPositionSpecifier = [positionSpecifier, currentNote];
-        lhNotesWithPositionSpecifier = [...lhNotesWithPositionSpecifier, noteWithPositionSpecifier];
+      let positionSpecifier = (ticks - creationTick) / TICK_SPAN;
+      let noteWithPositionSpecifier: NoteWithPositionSpecifier = [
+        positionSpecifier,
+        currentNote,
+      ];
+      lhNotesWithPositionSpecifier = [
+        ...lhNotesWithPositionSpecifier,
+        noteWithPositionSpecifier,
+      ];
     }
 
-    drawNotesOnStaveContextAtProgression(lhNotesWithPositionSpecifier, context, lhStave, "bass");
+    drawNotesOnStaveContextAtProgression(
+      lhNotesWithPositionSpecifier,
+      context,
+      lhStave,
+      "bass"
+    );
 
     context.beginPath();
     context.moveTo(80, 40);
@@ -366,7 +429,6 @@ function noteStringsAreEquivalent(
 
   return false;
 }
-
 
 function pitchToNoteString(pitch: number): string {
   let octave = Math.floor(pitch / 12);
