@@ -86,10 +86,10 @@ export function MidiSourceOption({
         selectedOption = "default";
     }
 
-    const [devices, setDevices] = useState<String[]>([]);
+    const [devices, setDevices] = useState<string[]>([]);
 
     async function scanForDevices() {
-        setDevices((await invoke("scan_for_devices")) as Array<String>);
+        setDevices((await invoke("scan_for_devices")) as Array<string>);
     }
 
     useEffect(() => {
@@ -97,7 +97,7 @@ export function MidiSourceOption({
     }, []);
 
     function onSelectedChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        let newValue = e.target.value;
+        const newValue = e.target.value;
         if (!isNaN(parseInt(newValue))) {
             setValue(parseInt(e.target.value));
         } else if (newValue === "m") {
@@ -113,7 +113,9 @@ export function MidiSourceOption({
             <select value={selectedOption} onChange={onSelectedChange}>
                 <option value="default">Please choose your input device</option>
                 {devices.map((device, index) => (
-                    <option value={index.toString()}>{device}</option>
+                    <option key={device} value={index.toString()}>
+                        {device}
+                    </option>
                 ))}
                 <option value="m">Microphone</option>
             </select>
