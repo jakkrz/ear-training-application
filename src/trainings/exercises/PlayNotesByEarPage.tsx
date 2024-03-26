@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { InputMethod } from "../../ConfigComponents";
-import classes from "./PlayNotesByEarPage.module.css";
 
 type Config = {
     diatonicOnly: boolean;
@@ -10,8 +9,8 @@ type Config = {
 };
 
 export default function PlayNotesByEarPage() {
-    let location = useLocation();
-    let state = location.state as Config;
+    const location = useLocation();
+    const state = location.state as Config;
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
@@ -65,15 +64,15 @@ function getRandomArbitrary(min: number, max: number) {
 }
 
 function generateNoteSequence(sequenceLength: number): Note[] {
-    let result: Note[] = [STARTING_NOTE];
+    const result: Note[] = [STARTING_NOTE];
     let prevNote = STARTING_NOTE;
 
     for (let i = 1; i < sequenceLength; i++) {
-        let prevNotePitch = noteStringToPitch(prevNote);
-        let lowerBound = Math.max(60, prevNotePitch - 4);
-        let upperBound = Math.min(81, prevNotePitch + 4);
-        let newPitch = Math.floor(getRandomArbitrary(lowerBound, upperBound));
-        let noteToAdd = pitchToNoteString(newPitch);
+        const prevNotePitch = noteStringToPitch(prevNote);
+        const lowerBound = Math.max(60, prevNotePitch - 4);
+        const upperBound = Math.min(81, prevNotePitch + 4);
+        const newPitch = Math.floor(getRandomArbitrary(lowerBound, upperBound));
+        const noteToAdd = pitchToNoteString(newPitch);
         result.push(noteToAdd);
         prevNote = noteToAdd;
     }
@@ -87,7 +86,7 @@ type NoteRecognitionStaveProps = {
 } & Config;
 
 function getAccidentalsFromNote(note: string): string {
-    let [baseNote, _octave] = note.split("/");
+    const [baseNote] = note.split("/");
     return baseNote.slice(1);
 }
 
@@ -97,7 +96,7 @@ function NoteRecognitionStave({
     noteSequenceLength,
 }: NoteRecognitionStaveProps) {
     const outputDivRef = useRef<HTMLDivElement>(null);
-    let studentNotesPlayed = studentNotes.length;
+    const studentNotesPlayed = studentNotes.length;
 
     useEffect(() => {
         const outputDiv = outputDivRef.current!;
@@ -119,7 +118,7 @@ function NoteRecognitionStave({
         });
 
         const teacherNotesToDraw = teacherNoteStructs.map((struct, index) => {
-            let note =
+            const note =
                 index < studentNotesPlayed
                     ? new StaveNote(struct)
                     : new GhostNote(struct);
@@ -128,7 +127,7 @@ function NoteRecognitionStave({
         });
 
         teacherNotes.forEach((value, index) => {
-            let accidentals = getAccidentalsFromNote(value);
+            const accidentals = getAccidentalsFromNote(value);
 
             if (accidentals !== "") {
                 teacherNotesToDraw[index].addModifier(
@@ -152,7 +151,7 @@ function NoteRecognitionStave({
 
         const studentNotesToDraw = studentVoiceNoteStructs.map(
             (struct, index) => {
-                let note =
+                const note =
                     index < studentNotesPlayed
                         ? new StaveNote(struct)
                         : new GhostNote(struct);
@@ -173,7 +172,7 @@ function NoteRecognitionStave({
         );
 
         studentNotes.forEach((value, index) => {
-            let accidentals = getAccidentalsFromNote(value);
+            const accidentals = getAccidentalsFromNote(value);
 
             if (accidentals !== "") {
                 studentNotesToDraw[index].addModifier(
@@ -247,8 +246,8 @@ function noteStringsAreEquivalent(
 }
 
 function pitchToNoteString(pitch: number): string {
-    let octave = Math.floor(pitch / 12);
-    let offset = pitch % 12;
+    const octave = Math.floor(pitch / 12);
+    const offset = pitch % 12;
     let noteName = "";
 
     if (USE_SHARPS) {
@@ -257,14 +256,14 @@ function pitchToNoteString(pitch: number): string {
         noteName = mapOffsetToNoteUsingFlats[offset];
     }
 
-    let noteString = `${noteName}/${octave - 1}`;
+    const noteString = `${noteName}/${octave - 1}`;
 
     return noteString;
 }
 
 function noteStringToPitch(noteString: string): number {
-    let [noteName, octaveString] = noteString.split("/");
-    let octave = Number(octaveString) + 1;
+    const [noteName, octaveString] = noteString.split("/");
+    const octave = Number(octaveString) + 1;
 
     let offset = mapOffsetToNoteUsingSharps.indexOf(noteName);
     offset =
@@ -303,21 +302,21 @@ function Game(props: Config) {
     const [acceptInput, setAcceptInput] = useState(false);
     const [gotCorrect, setGotCorrect] = useState(0);
     const [gotWrong, setGotWrong] = useState(0);
-    let menuActivated = studentNotes.length >= teacherNotes.length;
+    const menuActivated = studentNotes.length >= teacherNotes.length;
 
     useEffect(() => {
         if (acceptInput) {
             let studentNotesPlayed = studentNotes.length;
             const teacherNotesPlayed = teacherNotes.length;
 
-            let unlistenPromise = listen(
+            const unlistenPromise = listen(
                 "onmidinoteon",
                 (event: MidiNoteOnEvent) => {
                     if (
                         acceptInput &&
                         studentNotesPlayed < teacherNotesPlayed
                     ) {
-                        let pitch = event.payload.pitch;
+                        const pitch = event.payload.pitch;
                         setStudentNotes((studentNotes) => [
                             ...studentNotes,
                             pitchToNoteString(pitch),
@@ -333,6 +332,7 @@ function Game(props: Config) {
         } else {
             let currentTimeoutId: ReturnType<typeof setTimeout> = -1;
             let notesPlayed = 0;
+            // eslint-disable-next-line no-inner-declarations
             function playNote() {
                 const notePitch = noteStringToPitch(teacherNotes[notesPlayed]);
                 const noteVelocity = 127;

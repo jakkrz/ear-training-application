@@ -8,8 +8,8 @@ interface Config {
 }
 
 export default function StaffWarsPage() {
-    let location = useLocation();
-    let state = location.state as Config;
+    const location = useLocation();
+    const state = location.state as Config;
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ type NoteWithCreationTick = [number, Note];
 const TICK_SPAN = 2000;
 
 function getAccidentalsFromNote(note: string): string {
-    let [baseNote, _octave] = note.split("/");
+    const [baseNote] = note.split("/");
     return baseNote.slice(1);
 }
 
@@ -83,7 +83,7 @@ const useInterval = (callback: () => void, delay: number) => {
             }
         };
         if (delay !== null) {
-            let id = setInterval(tick, delay);
+            const id = setInterval(tick, delay);
             return () => clearInterval(id);
         }
     }, [delay]);
@@ -100,7 +100,7 @@ function purgeListOfNote(
     let purgedSomething = false;
 
     for (const noteWithCreationTick of notes) {
-        let [_, note] = noteWithCreationTick;
+        const [, note] = noteWithCreationTick;
 
         if (noteStringsAreEquivalent(note, noteToPurge)) {
             console.log("p");
@@ -113,14 +113,14 @@ function purgeListOfNote(
     return [resultList, purgedSomething];
 }
 
-function Game(props: any) {
-    let [ticks, setTicks] = useState(0);
-    let ticksRef = useRef(0);
-    let [rhNotes, setRhNotes] = useState<NoteWithCreationTick[]>([]);
-    let [lhNotes, setLhNotes] = useState<NoteWithCreationTick[]>([]);
-    let [noteSpeed, setNoteSpeed] = useState(1);
-    let [livesRemaining, setLivesRemaining] = useState(3);
-    let [gameState, setGameState] = useState<GameState>("playing");
+function Game(props: Config) {
+    const [ticks, setTicks] = useState(0);
+    const ticksRef = useRef(0);
+    const [rhNotes, setRhNotes] = useState<NoteWithCreationTick[]>([]);
+    const [lhNotes, setLhNotes] = useState<NoteWithCreationTick[]>([]);
+    const [noteSpeed, setNoteSpeed] = useState(1);
+    const [livesRemaining, setLivesRemaining] = useState(3);
+    const [gameState, setGameState] = useState<GameState>("playing");
 
     function loseLife() {
         setLivesRemaining((lives) => lives - 1);
@@ -134,12 +134,12 @@ function Game(props: any) {
 
     useEffect(() => {
         if (gameState == "playing") {
-            let unlistenPromise = listen(
+            const unlistenPromise = listen(
                 "onmidinoteon",
                 (event: MidiNoteOnEvent) => {
                     if (gameState == "playing") {
-                        let pitch = event.payload.pitch;
-                        let notePlayed = pitchToNoteString(pitch);
+                        const pitch = event.payload.pitch;
+                        const notePlayed = pitchToNoteString(pitch);
 
                         const [newRhNotes, purgedSomethingRh] = purgeListOfNote(
                             rhNotes,
@@ -170,7 +170,7 @@ function Game(props: any) {
 
     useInterval(() => {
         if (gameState !== "gameOver") {
-            let nextTick = ticks + noteSpeed;
+            const nextTick = ticks + noteSpeed;
             setTicks(nextTick);
             ticksRef.current = nextTick;
             setNoteSpeed((noteSpeed) => noteSpeed + ACCELERATION);
@@ -179,7 +179,7 @@ function Game(props: any) {
             let filteredRhNotes: NoteWithCreationTick[] = [];
 
             for (const note of rhNotes) {
-                const [creationTick, _] = note;
+                const [creationTick] = note;
                 if (nextTick - creationTick > TICK_SPAN) {
                     rhNotesWereFilteredOut = true;
                 } else {
@@ -193,7 +193,7 @@ function Game(props: any) {
             let filteredLhNotes: NoteWithCreationTick[] = [];
 
             for (const note of lhNotes) {
-                const [creationTick, _] = note;
+                const [creationTick] = note;
                 if (nextTick - creationTick > TICK_SPAN) {
                     lhNotesWereFilteredOut = true;
                 } else {
@@ -225,7 +225,7 @@ function Game(props: any) {
         }
     }, 3000);
 
-    let points = Math.floor(ticks * 0.01);
+    const points = Math.floor(ticks * 0.01);
 
     function onRestartButtonClick() {
         setTicks(0);
@@ -278,8 +278,8 @@ function createNoteVoice(
 ) {
     // Create a voice in 4/4 and add above notes
     const voice = new Voice({ num_beats: 1, beat_value: 4 });
-    let accidentals = getAccidentalsFromNote(note);
-    let staveNote = new StaveNote({
+    const accidentals = getAccidentalsFromNote(note);
+    const staveNote = new StaveNote({
         clef: clefType,
         keys: [note],
         duration: "q",
@@ -344,8 +344,8 @@ function NoteStave({ rhNotes, lhNotes, ticks }: NoteStaveProps) {
         for (const noteWithCreationTick of rhNotes) {
             const [creationTick, currentNote] = noteWithCreationTick;
 
-            let positionSpecifier = (ticks - creationTick) / TICK_SPAN;
-            let noteWithPositionSpecifier: NoteWithPositionSpecifier = [
+            const positionSpecifier = (ticks - creationTick) / TICK_SPAN;
+            const noteWithPositionSpecifier: NoteWithPositionSpecifier = [
                 positionSpecifier,
                 currentNote,
             ];
@@ -367,8 +367,8 @@ function NoteStave({ rhNotes, lhNotes, ticks }: NoteStaveProps) {
         for (const noteWithCreationTick of lhNotes) {
             const [creationTick, currentNote] = noteWithCreationTick;
 
-            let positionSpecifier = (ticks - creationTick) / TICK_SPAN;
-            let noteWithPositionSpecifier: NoteWithPositionSpecifier = [
+            const positionSpecifier = (ticks - creationTick) / TICK_SPAN;
+            const noteWithPositionSpecifier: NoteWithPositionSpecifier = [
                 positionSpecifier,
                 currentNote,
             ];
@@ -444,8 +444,8 @@ function noteStringsAreEquivalent(
 }
 
 function pitchToNoteString(pitch: number): string {
-    let octave = Math.floor(pitch / 12);
-    let offset = pitch % 12;
+    const octave = Math.floor(pitch / 12);
+    const offset = pitch % 12;
     let noteName = "";
 
     if (USE_SHARPS) {
@@ -454,14 +454,14 @@ function pitchToNoteString(pitch: number): string {
         noteName = mapOffsetToNoteUsingFlats[offset];
     }
 
-    let noteString = `${noteName}/${octave - 1}`;
+    const noteString = `${noteName}/${octave - 1}`;
 
     return noteString;
 }
 
 function noteStringToPitch(noteString: string): number {
-    let [noteName, octaveString] = noteString.split("/");
-    let octave = Number(octaveString) + 1;
+    const [noteName, octaveString] = noteString.split("/");
+    const octave = Number(octaveString) + 1;
 
     let offset = mapOffsetToNoteUsingSharps.indexOf(noteName);
     offset =

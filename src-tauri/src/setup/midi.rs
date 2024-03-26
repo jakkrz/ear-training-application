@@ -1,6 +1,6 @@
+use midir::{MidiOutput, MidiOutputPort};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
-use midir::{MidiOutput, MidiOutputPort};
 
 pub fn setup(app: AppHandle) -> Result<(), ()> {
     let midi_out = MidiOutput::new("My Test Output").unwrap();

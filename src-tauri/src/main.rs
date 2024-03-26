@@ -2,17 +2,17 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod setup;
-use midir::{MidiInput, MidiInputConnection, MidiOutputConnection, Ignore};
-use tauri::{AppHandle, Manager};
+use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutputConnection};
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
+use tauri::{AppHandle, Manager};
 use tracing::info;
 
 #[allow(dead_code)]
 struct MidiHandles {
     conn_out: Mutex<MidiOutputConnection>,
-    conn_in: Mutex<Option<MidiInputConnection<()>>>
+    conn_in: Mutex<Option<MidiInputConnection<()>>>,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -31,7 +31,12 @@ struct NoteOffPayload {
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-async fn play_note(pitch: u8, velocity: u8, duration: u64, state: tauri::State<'_, MidiHandles>) -> Result<(), String> {
+async fn play_note(
+    pitch: u8,
+    velocity: u8,
+    duration: u64,
+    state: tauri::State<'_, MidiHandles>,
+) -> Result<(), String> {
     let mut conn_out = state.conn_out.lock().unwrap();
 
     conn_out.send(&[0x90, pitch, velocity]).unwrap();
@@ -44,22 +49,28 @@ async fn play_note(pitch: u8, velocity: u8, duration: u64, state: tauri::State<'
 fn scan_for_devices() -> Vec<String> {
     let midi_input = MidiInput::new("midi device scan").unwrap();
 
-    midi_input.ports().iter()
+    midi_input
+        .ports()
+        .iter()
         .map(|port| midi_input.port_name(port).unwrap())
         .collect()
 }
 
 #[tauri::command]
-fn connect_input(port_n: usize, app_handle: AppHandle, state: tauri::State<'_, MidiHandles>) -> Result<(), String> {
+fn connect_input(
+    port_n: usize,
+    app_handle: AppHandle,
+    state: tauri::State<'_, MidiHandles>,
+) -> Result<(), String> {
     info!("setting up midi");
     let mut midi_in = MidiInput::new("midir reading input").unwrap();
     midi_in.ignore(Ignore::All);
 
     let in_ports = midi_in.ports();
     let in_port = in_ports
-                .get(port_n)
-                .ok_or("invalid input port selected")
-                .unwrap();
+        .get(port_n)
+        .ok_or("invalid input port selected")
+        .unwrap();
 
     info!("\nOpening connection");
     let in_port_name = midi_in.port_name(in_port).unwrap();
@@ -126,7 +137,12 @@ fn main() {
             let _ = setup::setup(app.handle());
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![play_note, scan_for_devices, connect_input, disconnect_input])
+        .invoke_handler(tauri::generate_handler![
+            play_note,
+            scan_for_devices,
+            connect_input,
+            disconnect_input
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
