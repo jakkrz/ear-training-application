@@ -13,19 +13,54 @@ export default function PlayNotesByEarConfigPage() {
     const [inputMethod, setInputMethod] = useState<InputMethod>(null);
     const [collectAnalytics, setCollectAnalytics] = useState(false);
 
-    return (<>
-        <Link to={"/train"} className="return-button">go back to training</Link>
-        <div className="config-content">
-            <h1>Play Notes By Ear</h1>
+    return (
+        <>
+            <Link to={"/train"} className="return-button">
+                go back to training
+            </Link>
+            <div className="config-content">
+                <h1>Play Notes By Ear</h1>
 
-            <div className="config-scroll-box">
-                <ToggleSwitchOption value={diatonicOnly} setValue={setDiatonicOnly}>Only play diatonic notes</ToggleSwitchOption>
-                <CounterOption value={noteSequenceLength} setValue={setNoteSequenceLength}>Number of notes</CounterOption>
-                <MidiSourceOption value={inputMethod} setValue={setInputMethod}>Note input device</MidiSourceOption>
-                <ToggleSwitchOption value={collectAnalytics} setValue={setCollectAnalytics}>Collect analytics</ToggleSwitchOption>
+                <div className="config-scroll-box">
+                    <ToggleSwitchOption
+                        value={diatonicOnly}
+                        setValue={setDiatonicOnly}
+                    >
+                        Only play diatonic notes
+                    </ToggleSwitchOption>
+                    <CounterOption
+                        value={noteSequenceLength}
+                        setValue={setNoteSequenceLength}
+                    >
+                        Number of notes
+                    </CounterOption>
+                    <MidiSourceOption
+                        value={inputMethod}
+                        setValue={setInputMethod}
+                    >
+                        Note input device
+                    </MidiSourceOption>
+                    <ToggleSwitchOption
+                        value={collectAnalytics}
+                        setValue={setCollectAnalytics}
+                    >
+                        Collect analytics
+                    </ToggleSwitchOption>
+                </div>
+
+                <Link
+                    to={"/train/exercises/play-notes-by-ear/actual"}
+                    className="navigation-button"
+                    state={{
+                        diatonicOnly,
+                        noteSequenceLength,
+                        inputMethod,
+                        collectAnalytics,
+                    }}
+                >
+                    Begin exercise
+                </Link>
             </div>
-
-            <Link to={"/train/exercises/play-notes-by-ear/actual"} className="navigation-button" state={{diatonicOnly, noteSequenceLength, inputMethod, collectAnalytics}}>Begin exercise</Link>
-        </div>
-    </>);
+        </>
+    );
 }

@@ -7,10 +7,7 @@ import AnalyticsPage from "./AnalyticsPage";
 import ImprovisePage from "./ImprovisePage";
 
 import "./styles.css";
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import ErrorPage from "./error-page";
 import PlayNotesByEarConfigPage from "./trainings/exercises/PlayNotesByEarConfigPage";
@@ -21,41 +18,50 @@ import StaffWarsConfigPage from "./trainings/games/StaffWarsConfigPage";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <RootPage/>,
-        errorElement: <ErrorPage/>
-    }, {
+        element: <RootPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/train",
-        element: <TrainPage/>,
-        errorElement: <ErrorPage/>
-    }, {
+        element: <TrainPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/improvise",
-        element: <ImprovisePage/>,
-        errorElement: <ErrorPage/>
-    }, {
+        element: <ImprovisePage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/analytics",
-        element: <AnalyticsPage/>,
-        errorElement: <ErrorPage/>
-    }, {
+        element: <AnalyticsPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/train/exercises/play-notes-by-ear/config",
-        element: <PlayNotesByEarConfigPage/>,
-        errorElement: <ErrorPage/>,
-    }, {
+        element: <PlayNotesByEarConfigPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/train/exercises/play-notes-by-ear/actual",
-        element: <PlayNotesByEarPage/>,
-        errorElement: <ErrorPage/>
-    }, {
+        element: <PlayNotesByEarPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/train/games/staff-wars/actual",
-        element: <StaffWarsPage/>,
-        errorElement: <ErrorPage/>
-    }, {
+        element: <StaffWarsPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
         path: "/train/games/staff-wars/config",
-        element: <StaffWarsConfigPage/>,
-        errorElement: <ErrorPage/>
-    }
-])
+        element: <StaffWarsConfigPage />,
+        errorElement: <ErrorPage />,
+    },
+]);
 
-ReactDOM.createRoot(document.getElementById("react-root") as HTMLElement).render(
-  <React.StrictMode>
-    <RouterProvider router={router}/>
-  </React.StrictMode>,
+ReactDOM.createRoot(
+    document.getElementById("react-root") as HTMLElement,
+).render(
+    <React.StrictMode>
+        <RouterProvider router={router} />
+    </React.StrictMode>,
 );
