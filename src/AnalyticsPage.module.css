@@ -1,0 +1,13 @@
+.scroll-box {
+    overflow: scroll;
+}
+
+.containing-flex {
+    display: flex;
+    flex-direction: column;
+    width: 100dvw;
+    height: 100dvh;
+    margin: none;
+    padding: 5px;
+    box-sizing: border-box;
+}

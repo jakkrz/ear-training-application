@@ -1,0 +1,49 @@
+.containing-div {
+    font-size: 25px;
+}
+
+.text {
+    border-radius: 0;
+    border: none;
+    background-color: transparent;
+    font-size: 1em;
+}
+
+.content {
+    padding-inline: 1.6em;
+}
+
+.arrow {
+    display: inline-block;
+    margin-left: 0.1em;
+    box-sizing: border-box;
+}
+
+.collapsible-container {
+    border-left: 1px solid;
+    padding: none;
+    margin: 10px;
+}
+
+.arrow.collapsed {
+    background-color: transparent;
+    border-left: 0.4em solid black;
+    border-bottom: 0.3em solid transparent;
+    border-top: 0.3em solid transparent;
+    transform: translateY(-10%);
+}
+
+.line {
+    border-bottom: 1px solid;
+    height: 1.5rem;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+}
+
+.arrow.expanded {
+    background-color: transparent;
+    border-right: 0.3em solid transparent;
+    border-left: 0.3em solid transparent;
+    border-top: 0.4em solid black;
+    transform: translate(-15%, -20%);
+}
