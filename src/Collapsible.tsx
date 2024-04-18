@@ -19,7 +19,7 @@ export function Collapsible({
     children,
     depth,
 }: CollapsibleProps): ReactElement {
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(false);
 
     function onButtonClick() {
         setCollapsed(!collapsed);
