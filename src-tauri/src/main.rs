@@ -133,6 +133,7 @@ fn disconnect_input(state: tauri::State<'_, MidiHandles>) {
 
 fn main() {
     tauri::Builder::default()
+        // .plugin(tauri_plugin_sql::Builder::default().build())
         .setup(|app| {
             let _ = setup::setup(app.handle());
             Ok(())
