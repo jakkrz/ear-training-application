@@ -1,0 +1,15 @@
+body {
+    margin: 0px;
+    padding: 20px;
+    height: 100dvh;
+    box-sizing: border-box;
+}
+
+#react-root {
+    height: 100%;
+}
+
+.chord-label {
+    margin: 0 auto;
+    font-size: 60px;
+}

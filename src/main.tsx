@@ -14,6 +14,8 @@ import PlayNotesByEarConfigPage from "./trainings/exercises/PlayNotesByEarConfig
 import PlayNotesByEarPage from "./trainings/exercises/PlayNotesByEarPage";
 import StaffWarsPage from "./trainings/games/StaffWarsPage";
 import StaffWarsConfigPage from "./trainings/games/StaffWarsConfigPage";
+import PlayChordsByNamePage from "./trainings/exercises/PlayChordsByNamePage";
+import PlayChordsByNameConfigPage from "./trainings/exercises/PlayChordsByNameConfigPage";
 
 const router = createBrowserRouter([
     {
@@ -54,6 +56,16 @@ const router = createBrowserRouter([
     {
         path: "/train/games/staff-wars/config",
         element: <StaffWarsConfigPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/train/exercises/play-chords-by-name/config",
+        element: <PlayChordsByNameConfigPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/train/exercises/play-chords-by-name/actual",
+        element: <PlayChordsByNamePage />,
         errorElement: <ErrorPage />,
     },
 ]);
