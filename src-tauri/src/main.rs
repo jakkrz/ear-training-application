@@ -144,6 +144,16 @@ fn disconnect_input(state: tauri::State<'_, MidiHandles>) {
     println!("Disconnected input");
 }
 
+#[tauri::command]
+fn play_recording_with_name(name: String, state: tauri::State<'_, MidiHandles>) {
+
+}
+
+#[tauri::command]
+fn stop_playing_recording(name: String, state: tauri::State<'_, MidiHandles>) {
+    
+}
+
 fn main() {
     tauri::Builder::default()
         // .plugin(tauri_plugin_sql::Builder::default().build())

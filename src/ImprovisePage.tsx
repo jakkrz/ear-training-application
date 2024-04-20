@@ -1,5 +1,46 @@
 import classes from "./ImprovisePage.module.css";
 import { Link } from "react-router-dom";
+import {
+    readDir,
+    createDir,
+    BaseDirectory,
+    removeFile,
+} from "@tauri-apps/api/fs";
+import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
+
+const DIR_NAME = "recordings";
+
+async function createDirIfNotExists() {
+    await createDir(DIR_NAME, { dir: BaseDirectory.AppData, recursive: true });
+}
+
+function getPathTail(path: string): string {
+    if (path.includes("/")) {
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    return path;
+}
+
+await createDirIfNotExists();
+
+async function getRecordingNames(): Promise<string[]> {
+    const entries = await readDir(DIR_NAME, {
+        dir: BaseDirectory.AppData,
+        recursive: true,
+    });
+
+    const result: string[] = [];
+
+    for (const entry of entries) {
+        const name = getPathTail(entry.path);
+
+        result.push(name);
+    }
+
+    return result;
+}
 
 type ImprovisationProps = {
     name: string;
@@ -68,7 +109,39 @@ function Improvisation({
 }
 
 function ImprovisationList() {
-    return <Improvisation name="example improv.mid" />;
+    const [recordingNames, setRecordingNames] = useState<string[]>([]);
+
+    async function playRecording(name: string) {
+        await invoke("play_recording_with_name", { name });
+    }
+    function stopRecording() {
+        await invoke("stop_playing_recording");
+    }
+    async function deleteRecording(name: string) {
+        await removeFile(`${DIR_NAME}/${name}`, {
+            dir: BaseDirectory.AppData,
+        });
+
+        setRecordingNames(await getRecordingNames());
+    }
+
+    useEffect(() => {
+        (async () => {
+            setRecordingNames(await getRecordingNames());
+        })();
+    }, []);
+
+    const improvisationElements = recordingNames.map((name) => (
+        <Improvisation
+            name={name}
+            key={name}
+            playRecording={playRecording}
+            stopRecording={stopRecording}
+            deleteRecording={deleteRecording}
+            isPlaying={false}
+        />
+    ));
+    return <>{improvisationElements}</>;
 }
 
 export default function ImprovisePage() {
