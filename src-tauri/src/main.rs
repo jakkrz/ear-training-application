@@ -91,16 +91,29 @@ fn connect_input(
                 let status_byte = message[0];
 
                 if status_byte >> 4 == 0x9 {
-                    new_app
-                        .emit_all(
-                            "onmidinoteon",
-                            NoteOnPayload {
-                                channel: status_byte & 0x0F,
-                                pitch: message[1],
-                                velocity: message[2],
-                            },
-                        )
-                        .expect("failed to emit onmidinoteon event");
+                    if message[2] == 0x00 {
+                        new_app
+                            .emit_all(
+                                "onmidinoteoff",
+                                NoteOffPayload {
+                                    channel: status_byte & 0x0F,
+                                    pitch: message[1],
+                                    velocity: message[2],
+                                },
+                            )
+                            .expect("failed to emit onmidinoteoff event");
+                    } else {
+                        new_app
+                            .emit_all(
+                                "onmidinoteon",
+                                NoteOnPayload {
+                                    channel: status_byte & 0x0F,
+                                    pitch: message[1],
+                                    velocity: message[2],
+                                },
+                            )
+                            .expect("failed to emit onmidinoteon event");
+                    }
                 } else if status_byte >> 4 == 0x8 {
                     new_app
                         .emit_all(
