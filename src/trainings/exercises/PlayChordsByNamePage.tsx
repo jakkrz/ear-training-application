@@ -80,10 +80,10 @@ function ChordStave({ teacherChord, studentChord }: ChordStaveProps) {
         const outputDiv = outputDivRef.current!;
         const renderer = new Renderer(outputDiv, Renderer.Backends.SVG);
 
-        renderer.resize(170, 120);
+        renderer.resize(210, 120);
 
         const context = renderer.getContext() as SVGContext;
-        const stave = new Stave(0, 0, 160);
+        const stave = new Stave(0, 0, 200);
         stave.addClef("treble").addTimeSignature("1/4");
         stave.setContext(context).draw();
 
@@ -128,6 +128,8 @@ function ChordStave({ teacherChord, studentChord }: ChordStaveProps) {
                         index,
                     );
                 }
+
+                console.log(teacherChord[index], studentChord[index]);
 
                 if (
                     noteStringsAreEquivalent(
@@ -258,11 +260,11 @@ interface MidiNoteOnEvent {
     };
 }
 
-function noteSequencesAreEquivalent(seqA: Note[], seqB: Note[]): boolean {
-    if (seqA.length !== seqB.length) return false;
+function chordsAreEquivalent(chordA: Note[], chordB: Note[]): boolean {
+    if (chordA.length !== chordB.length) return false;
 
-    for (const [index, note] of seqA.entries()) {
-        if (!noteStringsAreEquivalent(note, seqB[index])) return false;
+    for (const [index, note] of chordA.entries()) {
+        if (!noteStringsAreEquivalent(note, chordB[index])) return false;
     }
 
     return true;
@@ -301,37 +303,46 @@ function Game(props: Config) {
     const menuActivated = studentChord.length >= teacherChord.length;
 
     useEffect(() => {
-        let studentNotesPlayed = studentChord.length;
-        const teacherNotesPlayed = teacherChord.length;
-
         const unlistenPromise = listen(
             "onmidinoteon",
             (event: MidiNoteOnEvent) => {
-                if (studentNotesPlayed < teacherNotesPlayed) {
-                    const pitch = event.payload.pitch;
-                    setStudentChord((studentChord) => [
-                        ...studentChord,
-                        pitchToNoteString(pitch),
-                    ]);
+                const pitch = event.payload.pitch;
+                setStudentChord((studentChord) => {
+                    const studentNotesPlayed = studentChord.length;
+                    const teacherNotesPlayed = teacherChord.length;
+                    if (studentNotesPlayed < teacherNotesPlayed) {
+                        const newChord = [
+                            ...studentChord,
+                            pitchToNoteString(pitch),
+                        ];
 
-                    if (studentChord.length - 1 >= teacherChord.length) {
-                        setGotCorrect((x) => x + 1);
-                        setGotWrong((x) => x + 1);
+                        newChord.sort((a, b) => {
+                            return noteStringToPitch(a) - noteStringToPitch(b);
+                        });
+
+                        return newChord;
+                    } else {
+                        return studentChord;
                     }
-                    studentNotesPlayed++;
-                }
+                });
             },
         );
 
         return () => {
             unlistenPromise.then((unlisten) => unlisten());
         };
-    }, []);
+    }, [setTeacherChord]);
 
     function handleNextButtonClick() {
         const [randomChordName, randomChord] = generateChord();
         setTeacherChord(randomChord);
         setTeacherChordName(randomChordName);
+        setStudentChord([]);
+        if (chordsAreEquivalent(teacherChord, studentChord)) {
+            setGotCorrect((x) => x + 1);
+        } else {
+            setGotWrong((x) => x + 1);
+        }
     }
 
     useEffect(() => {
