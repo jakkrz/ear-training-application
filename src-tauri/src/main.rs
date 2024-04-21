@@ -2,12 +2,15 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod setup;
-use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutputConnection};
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
+use std::fs;
+
 use tauri::{AppHandle, Manager};
-use tracing::info;
+use tracing::{info, instrument::WithSubscriber};
+use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutputConnection};
+use midly::Smf;
 
 #[allow(dead_code)]
 struct MidiHandles {
@@ -145,12 +148,22 @@ fn disconnect_input(state: tauri::State<'_, MidiHandles>) {
 }
 
 #[tauri::command]
-fn play_recording_with_name(name: String, state: tauri::State<'_, MidiHandles>) {
+async fn play_recording_with_name(name: String, state: tauri::State<'_, MidiHandles>, app_handle: AppHandle) -> Result<String, ()> {
+    let mut file_path = app_handle.path_resolver().app_data_dir().unwrap();
+    file_path.push("recordings");
+    file_path.push(name);
 
+    println!("{:?}", file_path);
+
+    let bytes = fs::read(file_path).unwrap();
+
+    let smf = Smf::parse(&bytes).unwrap();
+
+    Ok(smf.tracks.iter().count().to_string())
 }
 
 #[tauri::command]
-fn stop_playing_recording(name: String, state: tauri::State<'_, MidiHandles>) {
+fn stop_playing_recording(state: tauri::State<'_, MidiHandles>) {
     
 }
 
@@ -165,7 +178,9 @@ fn main() {
             play_note,
             scan_for_devices,
             connect_input,
-            disconnect_input
+            disconnect_input,
+            play_recording_with_name,
+            stop_playing_recording,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

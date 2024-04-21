@@ -112,9 +112,10 @@ function ImprovisationList() {
     const [recordingNames, setRecordingNames] = useState<string[]>([]);
 
     async function playRecording(name: string) {
-        await invoke("play_recording_with_name", { name });
+        console.log(BaseDirectory.AppData);
+        console.log(await invoke("play_recording_with_name", { name }));
     }
-    function stopRecording() {
+    async function stopRecording() {
         await invoke("stop_playing_recording");
     }
     async function deleteRecording(name: string) {

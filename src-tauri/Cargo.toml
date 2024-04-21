@@ -19,6 +19,7 @@ serde_json = "1.0"
 midir = "0.9.1"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
+midly = "0.5.3"
 
 [dependencies.tauri-plugin-sql]
 git = "https://github.com/tauri-apps/plugins-workspace"
