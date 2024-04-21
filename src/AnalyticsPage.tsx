@@ -79,10 +79,7 @@ function ConsecutiveNotesChart() {
             "Mar 17",
             "Mar 18",
         ];
-        const yValues = [
-            0.1, 0.132, 0.215, 0.105, 0.232, 0.488, 0.333, 0.268, 0.511, 0.701,
-            0.444, 0.65, 0.63, 0.73, 1,
-        ];
+        const yValues = [1, 1, 2, 3, 2, 5, 4, 6, 5, 4, 6, 7, 6, 7, 8];
 
         const ch = new Chart("cons", {
             type: "line",
@@ -102,16 +99,6 @@ function ConsecutiveNotesChart() {
                     title: {
                         display: true,
                         text: "Number of consecutive notes played (Repeat Notes test)",
-                    },
-                },
-                scales: {
-                    y: {
-                        ticks: {
-                            // Include a dollar sign in the ticks
-                            callback: function (value: number) {
-                                return `${value * 100}%`;
-                            },
-                        },
                     },
                 },
             },
