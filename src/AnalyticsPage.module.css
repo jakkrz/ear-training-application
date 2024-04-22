@@ -1,5 +1,5 @@
 .scroll-box {
-    overflow: scroll;
+    overflow: auto;
 }
 
 .containing-flex {
