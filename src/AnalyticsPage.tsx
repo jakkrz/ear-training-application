@@ -162,7 +162,7 @@ function RepeatNotesChart() {
                 scales: {
                     y: {
                         ticks: {
-                            // Include a dollar sign in the ticks
+                            // @ts-expect-error TypeError
                             callback: function (value: number) {
                                 return `${value * 100}%`;
                             },
@@ -196,9 +196,31 @@ export default function AnalyticsPage() {
                 <div className={classes.scrollBox}>
                     <CollapsibleContainer>
                         <Collapsible text="Training-specific" depth={1}>
-                            <Collapsible text="More" depth={2}>
-                                <RepeatNotesChart></RepeatNotesChart>
-                                <ConsecutiveNotesChart></ConsecutiveNotesChart>
+                            <Collapsible text="Exercises" depth={2}>
+                                <Collapsible text="Repeat Notes" depth={3}>
+                                    <RepeatNotesChart></RepeatNotesChart>
+                                </Collapsible>
+                                <Collapsible
+                                    text="Play chords by name"
+                                    depth={3}
+                                ></Collapsible>
+                            </Collapsible>
+                            <Collapsible text="Games" depth={2}>
+                                <Collapsible text="Staff Wars" depth={3}>
+                                    <StaffWarsChart></StaffWarsChart>
+                                </Collapsible>
+                            </Collapsible>
+                            <Collapsible text="Tests" depth={2}>
+                                <Collapsible
+                                    text="Repeat Notes (test)"
+                                    depth={3}
+                                >
+                                    <ConsecutiveNotesChart></ConsecutiveNotesChart>
+                                </Collapsible>
+                                <Collapsible text="Staff Wars (test)" depth={3}>
+                                    <ConsecutiveNotesChart></ConsecutiveNotesChart>
+                                </Collapsible>
+
                                 <StaffWarsChart></StaffWarsChart>
                             </Collapsible>
                         </Collapsible>

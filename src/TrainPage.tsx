@@ -15,7 +15,7 @@ export default function TrainPage() {
                         to={"/train/exercises/play-notes-by-ear/config"}
                         className="navigation-button"
                     >
-                        Play Notes by Ear
+                        Play Notes by Ear (Repeat notes)
                     </Link>
                     <Link
                         to={"/train/exercises/play-chords-by-name/config"}
@@ -33,13 +33,13 @@ export default function TrainPage() {
                     </Link>
                     <h2>Tests</h2>
                     <Link
-                        to={"/train/tests/repeat-notes/config"}
+                        to={"/train/tests/play-notes-by-ear/config"}
                         className="navigation-button"
                     >
                         Repeat Notes (Test)
                     </Link>
                     <Link
-                        to={"/train/tests/staff-wars/config"}
+                        to={"/train/games/staff-wars/config"}
                         className="navigation-button"
                     >
                         Staff Wars (Test)

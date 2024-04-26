@@ -118,7 +118,7 @@ function Game(props: Config) {
     const ticksRef = useRef(0);
     const [rhNotes, setRhNotes] = useState<NoteWithCreationTick[]>([]);
     const [lhNotes, setLhNotes] = useState<NoteWithCreationTick[]>([]);
-    const [noteSpeed, setNoteSpeed] = useState(0.5);
+    const [noteSpeed, setNoteSpeed] = useState(1);
     const [livesRemaining, setLivesRemaining] = useState(3);
     const [gameState, setGameState] = useState<GameState>("playing");
 
@@ -230,7 +230,7 @@ function Game(props: Config) {
     function onRestartButtonClick() {
         setTicks(0);
         ticksRef.current = 0;
-        setNoteSpeed(0.5);
+        setNoteSpeed(1);
         setLivesRemaining(3);
         setGameState("playing");
     }

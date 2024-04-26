@@ -5,12 +5,10 @@ mod setup;
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
-use std::fs;
 
-use tauri::{AppHandle, Manager};
-use tracing::{info, instrument::WithSubscriber};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutputConnection};
-use midly::Smf;
+use tauri::{AppHandle, Manager};
+use tracing::info;
 
 #[allow(dead_code)]
 struct MidiHandles {
@@ -147,25 +145,25 @@ fn disconnect_input(state: tauri::State<'_, MidiHandles>) {
     println!("Disconnected input");
 }
 
-#[tauri::command]
-async fn play_recording_with_name(name: String, state: tauri::State<'_, MidiHandles>, app_handle: AppHandle) -> Result<String, ()> {
-    let mut file_path = app_handle.path_resolver().app_data_dir().unwrap();
-    file_path.push("recordings");
-    file_path.push(name);
+// #[tauri::command]
+// async fn play_recording_with_name(name: String, state: tauri::State<'_, MidiHandles>, app_handle: AppHandle) -> Result<String, ()> {
+//     let mut file_path = app_handle.path_resolver().app_data_dir().unwrap();
+//     file_path.push("recordings");
+//     file_path.push(name);
 
-    println!("{:?}", file_path);
+//     println!("{:?}", file_path);
 
-    let bytes = fs::read(file_path).unwrap();
+//     let bytes = fs::read(file_path).unwrap();
 
-    let smf = Smf::parse(&bytes).unwrap();
+//     let smf = Smf::parse(&bytes).unwrap();
 
-    Ok(smf.tracks.iter().count().to_string())
-}
+//     Ok(smf.tracks.iter().count().to_string())
+// }
 
-#[tauri::command]
-fn stop_playing_recording(state: tauri::State<'_, MidiHandles>) {
-    
-}
+// #[tauri::command]
+// fn stop_playing_recording(state: tauri::State<'_, MidiHandles>) {
+
+// }
 
 fn main() {
     tauri::Builder::default()
@@ -179,8 +177,6 @@ fn main() {
             scan_for_devices,
             connect_input,
             disconnect_input,
-            play_recording_with_name,
-            stop_playing_recording,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

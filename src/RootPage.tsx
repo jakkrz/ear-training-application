@@ -12,9 +12,6 @@ export default function RootPage() {
                 <Link to={"/analytics"} className="navigation-button">
                     Analytics
                 </Link>
-                <Link to={"/improvise"} className="navigation-button">
-                    Improvise
-                </Link>
             </div>
         </div>
     );
