@@ -15,6 +15,14 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "fs": {
+        "scope": ["$APPDATA/recordings",
+                "$APPDATA/recordings/*"],
+        "all": true
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {

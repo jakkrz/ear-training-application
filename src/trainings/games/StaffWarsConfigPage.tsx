@@ -1,17 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
     ToggleSwitchOption,
-    CounterOption,
     MidiSourceOption,
     InputMethod,
 } from "../../ConfigComponents";
-import { useState } from "react";
 
-export default function PlayNotesByEarConfigPage() {
-    const [diatonicOnly, setDiatonicOnly] = useState(false);
-    const [noteSequenceLength, setNoteSequenceLength] = useState(4);
+export default function StaffWarsConfigPage() {
+    const [collectAnalytics, setCollectAnalytics] = useState(true);
     const [inputMethod, setInputMethod] = useState<InputMethod>(null);
-    const [collectAnalytics, setCollectAnalytics] = useState(false);
 
     return (
         <>
@@ -19,21 +16,9 @@ export default function PlayNotesByEarConfigPage() {
                 go back to training
             </Link>
             <div className="config-content">
-                <h1>Play Notes By Ear</h1>
+                <h1>Staff Wars</h1>
 
                 <div className="config-scroll-box">
-                    <ToggleSwitchOption
-                        value={diatonicOnly}
-                        setValue={setDiatonicOnly}
-                    >
-                        Only play diatonic notes
-                    </ToggleSwitchOption>
-                    <CounterOption
-                        value={noteSequenceLength}
-                        setValue={setNoteSequenceLength}
-                    >
-                        Number of notes
-                    </CounterOption>
                     <MidiSourceOption
                         value={inputMethod}
                         setValue={setInputMethod}
@@ -49,14 +34,9 @@ export default function PlayNotesByEarConfigPage() {
                 </div>
 
                 <Link
-                    to={"/train/exercises/play-notes-by-ear/actual"}
+                    to={"/train/games/staff-wars/actual"}
                     className="navigation-button"
-                    state={{
-                        diatonicOnly,
-                        noteSequenceLength,
-                        inputMethod,
-                        collectAnalytics,
-                    }}
+                    state={{ collectAnalytics, inputMethod }}
                 >
                     Begin exercise
                 </Link>

@@ -1,0 +1,53 @@
+:root,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.everything-container {
+    display: flex;
+    height: 100dvh;
+    width: 100dvw;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.improvisation-list-container {
+    height: 100dvh;
+    max-width: 500px;
+    width: 100dvw;
+    margin: 50px;
+    overflow: auto;
+}
+
+.text-button.delete {
+    color: red;
+}
+
+.text-button.play {
+    color: blue;
+}
+
+.text-button:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.text-button {
+    border: none;
+    background-color: transparent;
+    display: block;
+    font-size: 20px;
+}
+
+.navbuttonFlex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbuttonFlex p {
+    margin: 0;
+    font-size: 20px;
+}

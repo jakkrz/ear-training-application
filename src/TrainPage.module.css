@@ -1,6 +1,6 @@
 .training-list-container {
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
 }
 
 [class*="navigation-button"] {
